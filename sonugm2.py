@@ -1,7 +1,8 @@
 import pygame
 import button
 import csv
-import pickle
+
+from file_handler import initialize_world_data, load_file, save_file
 
 pygame.init()
 
@@ -9,21 +10,22 @@ clock = pygame.time.Clock()
 FPS = 60
 
 #game window
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 640
+SCREEN_WIDTH = 1024
+SCREEN_HEIGHT = 1024
 LOWER_MARGIN = 100
 SIDE_MARGIN = 300
 
 screen = pygame.display.set_mode((SCREEN_WIDTH + SIDE_MARGIN, SCREEN_HEIGHT + LOWER_MARGIN))
-pygame.display.set_caption('Level Editor Tutorial')
+pygame.display.set_caption('Super One Nation Under God Maker 2')
 
 
 #define game variables
-ROWS = 16
-MAX_COLS = 150
+ROWS = 64
+MAX_COLS = 64
 TILE_SIZE = SCREEN_HEIGHT // ROWS
 TILE_TYPES = 21
-level = 0
+level = "Ice is Fun!"
+floor = 1
 current_tile = 0
 scroll_left = False
 scroll_right = False
@@ -56,10 +58,7 @@ RED = (200, 25, 25)
 font = pygame.font.SysFont('Futura', 30)
 
 #create empty tile list
-world_data = []
-for row in range(ROWS):
-	r = [-1] * MAX_COLS
-	world_data.append(r)
+world_data = initialize_world_data(ROWS, MAX_COLS)
 
 #create ground
 for tile in range(0, MAX_COLS):
@@ -74,13 +73,13 @@ def draw_text(text, font, text_col, x, y):
 
 #create function for drawing background
 def draw_bg():
-	screen.fill(GREEN)
-	width = sky_img.get_width()
-	for x in range(4):
-		screen.blit(sky_img, ((x * width) - scroll * 0.5, 0))
-		screen.blit(mountain_img, ((x * width) - scroll * 0.6, SCREEN_HEIGHT - mountain_img.get_height() - 300))
-		screen.blit(pine1_img, ((x * width) - scroll * 0.7, SCREEN_HEIGHT - pine1_img.get_height() - 150))
-		screen.blit(pine2_img, ((x * width) - scroll * 0.8, SCREEN_HEIGHT - pine2_img.get_height()))
+	screen.fill((0, 0, 0))
+	# width = sky_img.get_width()
+	# for x in range(4):
+	# 	screen.blit(sky_img, ((x * width) - scroll * 0.5, 0))
+	# 	screen.blit(mountain_img, ((x * width) - scroll * 0.6, SCREEN_HEIGHT - mountain_img.get_height() - 300))
+	# 	screen.blit(pine1_img, ((x * width) - scroll * 0.7, SCREEN_HEIGHT - pine1_img.get_height() - 150))
+	# 	screen.blit(pine2_img, ((x * width) - scroll * 0.8, SCREEN_HEIGHT - pine2_img.get_height()))
 
 #draw grid
 def draw_grid():
@@ -116,7 +115,6 @@ for i in range(len(img_list)):
 		button_row += 1
 		button_col = 0
 
-
 run = True
 while run:
 
@@ -126,33 +124,18 @@ while run:
 	draw_grid()
 	draw_world()
 
-	draw_text(f'Level: {level}', font, WHITE, 10, SCREEN_HEIGHT + LOWER_MARGIN - 90)
-	draw_text('Press UP or DOWN to change level', font, WHITE, 10, SCREEN_HEIGHT + LOWER_MARGIN - 60)
+	draw_text(f'Floor: {floor}', font, WHITE, 10, SCREEN_HEIGHT + LOWER_MARGIN - 90)
+	draw_text('Press UP or DOWN to change floor', font, WHITE, 10, SCREEN_HEIGHT + LOWER_MARGIN - 60)
 
 	#save and load data
 	if save_button.draw(screen):
 		#save level data
-		with open(f'level{level}_data.csv', 'w', newline='') as csvfile:
-			writer = csv.writer(csvfile, delimiter = ',')
-			for row in world_data:
-				writer.writerow(row)
-		#alternative pickle method
-		#pickle_out = open(f'level{level}_data', 'wb')
-		#pickle.dump(world_data, pickle_out)
-		#pickle_out.close()
+		save_file(world_data, f'level{floor}_data.csv')
 	if load_button.draw(screen):
 		#load in level data
 		#reset scroll back to the start of the level
 		scroll = 0
-		with open(f'level{level}_data.csv', newline='') as csvfile:
-			reader = csv.reader(csvfile, delimiter = ',')
-			for x, row in enumerate(reader):
-				for y, tile in enumerate(row):
-					world_data[x][y] = int(tile)
-		#alternative pickle method
-		#world_data = []
-		#pickle_in = open(f'level{level}_data', 'rb')
-		#world_data = pickle.load(pickle_in)
+		world_data = load_file(f'level{floor}_data.csv')
 				
 
 	#draw tile panel and tiles
@@ -188,16 +171,17 @@ while run:
 		if pygame.mouse.get_pressed()[2] == 1:
 			world_data[y][x] = -1
 
+	events = pygame.event.get()
 
-	for event in pygame.event.get():
+	for event in events:
 		if event.type == pygame.QUIT:
 			run = False
 		#keyboard presses
 		if event.type == pygame.KEYDOWN:
-			if event.key == pygame.K_UP:
-				level += 1
-			if event.key == pygame.K_DOWN and level > 0:
-				level -= 1
+			if event.key == pygame.K_UP and floor < 4:
+				floor += 1
+			if event.key == pygame.K_DOWN and floor > 1:
+				floor -= 1
 			if event.key == pygame.K_LEFT:
 				scroll_left = True
 			if event.key == pygame.K_RIGHT:
