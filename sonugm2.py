@@ -108,12 +108,14 @@ button_list = []
 button_col = 0
 button_row = 0
 for i in range(len(img_list)):
-	tile_button = button.Button(SCREEN_WIDTH + (75 * button_col) + 50, 75 * button_row + 50, img_list[i], 1)
+	tile_button = button.Button(SCREEN_WIDTH + (75 * button_col) + 50, 75 * button_row + 50, img_list[i], 2)
 	button_list.append(tile_button)
 	button_col += 1
 	if button_col == 3:
 		button_row += 1
 		button_col = 0
+
+world_data = load_file(f'level{floor}_data.csv')
 
 run = True
 while run:
@@ -180,8 +182,10 @@ while run:
 		if event.type == pygame.KEYDOWN:
 			if event.key == pygame.K_UP and floor < 4:
 				floor += 1
+				world_data = load_file(f'level{floor}_data.csv')
 			if event.key == pygame.K_DOWN and floor > 1:
 				floor -= 1
+				world_data = load_file(f'level{floor}_data.csv')
 			if event.key == pygame.K_LEFT:
 				scroll_left = True
 			if event.key == pygame.K_RIGHT:
