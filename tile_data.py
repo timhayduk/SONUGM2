@@ -68,12 +68,72 @@ TILE_DATA = {
         "char": "="
     },
     16: {
-        "name": "Pit",
-        "char": "P"
+        "name": "Doorknob (Star)",
+        "char": "*"
     },
     17: {
-        "name": "Pit",
-        "char": "P"
+        "name": "Doorknob (Term/Definition)",
+        "char": "V"
+    },
+    18: {
+        "name": "Door Lock",
+        "char": "L"
+    },
+    19: {
+        "name": "Drum",
+        "char": "D"
+    },
+    20: {
+        "name": "Flinger",
+        "char": "W"
+    },
+    21: {
+        "name": "False Floor Tile",
+        "char": "f"
+    },
+    22: {
+        "name": "True Floor Tile",
+        "char": "t"
+    },
+    23: {
+        "name": "Star",
+        "char": "+"
+    },
+    24: {
+        "name": "Key",
+        "char": "K"
+    },
+    25: {
+        "name": "Armor Painting",
+        "char": "A"
+    },
+    26: {
+        "name": "Save Painting",
+        "char": "E"
+    },
+    27: {
+        "name": "Flight Painting",
+        "char": "F"
+    },
+    28: {
+        "name": "Stealth Painting",
+        "char": "S"
+    },
+    29: {
+        "name": "Boot",
+        "char": "B"
+    },
+    30: {
+        "name": "Lie Blob",
+        "char": "U"
+    },
+    31: {
+        "name": "Blimp",
+        "char": "Z"
+    },
+    32: {
+        "name": "Bomb Shooter",
+        "char": "^"
     },
     
 }

@@ -25,7 +25,7 @@ pygame.display.set_caption('Super One Nation Under God Maker 2')
 ROWS = 64
 MAX_COLS = 64
 TILE_SIZE = SCREEN_HEIGHT // ROWS
-TILE_TYPES = 21
+TILE_TYPES = 33
 level = "level"
 floor = 1
 current_tile = 0
