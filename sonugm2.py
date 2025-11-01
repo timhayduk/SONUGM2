@@ -2,7 +2,8 @@ import pygame
 import button
 import csv
 
-from file_handler import initialize_world_data, load_file, save_file
+from file_handler import initialize_world_data, load_file, save_file, save_text_file
+from tile_data import TILE_DATA
 
 pygame.init()
 
@@ -13,7 +14,7 @@ FPS = 60
 SCREEN_WIDTH = 1024
 SCREEN_HEIGHT = 1024
 LOWER_MARGIN = 100
-SIDE_MARGIN = 300
+SIDE_MARGIN = 600
 
 screen = pygame.display.set_mode((SCREEN_WIDTH + SIDE_MARGIN, SCREEN_HEIGHT + LOWER_MARGIN))
 pygame.display.set_caption('Super One Nation Under God Maker 2')
@@ -111,11 +112,11 @@ for i in range(len(img_list)):
 	tile_button = button.Button(SCREEN_WIDTH + (75 * button_col) + 50, 75 * button_row + 50, img_list[i], 2)
 	button_list.append(tile_button)
 	button_col += 1
-	if button_col == 3:
+	if button_col == 6:
 		button_row += 1
 		button_col = 0
 
-world_data = load_file(f'level{floor}_data.csv')
+world_data = load_file("level", floor)
 
 run = True
 while run:
@@ -132,12 +133,13 @@ while run:
 	#save and load data
 	if save_button.draw(screen):
 		#save level data
-		save_file(world_data, f'level{floor}_data.csv')
+		save_file(world_data, "level", floor)
+		save_text_file("level")
 	if load_button.draw(screen):
 		#load in level data
 		#reset scroll back to the start of the level
 		scroll = 0
-		world_data = load_file(f'level{floor}_data.csv')
+		world_data = load_file("level", floor)
 				
 
 	#draw tile panel and tiles
@@ -151,6 +153,9 @@ while run:
 
 	#highlight the selected tile
 	pygame.draw.rect(screen, RED, button_list[current_tile].rect, 3)
+
+	# Show the current tile's name
+	draw_text(f'Current Tile: {TILE_DATA[current_tile]["name"]}', font, WHITE, SCREEN_WIDTH + 10, 10)
 
 	#scroll the map
 	if scroll_left == True and scroll > 0:
