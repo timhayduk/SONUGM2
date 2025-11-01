@@ -1,6 +1,7 @@
-import pygame
 import button
-import csv
+import pygame
+import pygame_textinput
+import re
 
 from file_handler import initialize_world_data, load_file, save_file, save_text_file
 from tile_data import TILE_DATA
@@ -25,7 +26,7 @@ ROWS = 64
 MAX_COLS = 64
 TILE_SIZE = SCREEN_HEIGHT // ROWS
 TILE_TYPES = 21
-level = "Ice is Fun!"
+level = "level"
 floor = 1
 current_tile = 0
 scroll_left = False
@@ -102,8 +103,8 @@ def draw_world():
 
 
 #create buttons
-save_button = button.Button(SCREEN_WIDTH // 2, SCREEN_HEIGHT + LOWER_MARGIN - 50, save_img, 1)
-load_button = button.Button(SCREEN_WIDTH // 2 + 200, SCREEN_HEIGHT + LOWER_MARGIN - 50, load_img, 1)
+save_button = button.Button(SCREEN_WIDTH + 150, SCREEN_HEIGHT + LOWER_MARGIN - 50, save_img, 1)
+load_button = button.Button(SCREEN_WIDTH + 350, SCREEN_HEIGHT + LOWER_MARGIN - 50, load_img, 1)
 #make a button list
 button_list = []
 button_col = 0
@@ -116,7 +117,18 @@ for i in range(len(img_list)):
 		button_row += 1
 		button_col = 0
 
-world_data = load_file("level", floor)
+world_data = load_file(level, floor)
+manager = pygame_textinput.TextInputManager(
+	validator = lambda input: re.match("^[A-Za-z0-9 ]*$", input) != None
+)
+text_input = pygame_textinput.TextInputVisualizer(
+	manager=manager,
+	font_object=font,
+	font_color=WHITE,
+	cursor_color=WHITE
+)
+text_input.value = level
+text_input_active = False
 
 run = True
 while run:
@@ -128,18 +140,18 @@ while run:
 	draw_world()
 
 	draw_text(f'Floor: {floor}', font, WHITE, 10, SCREEN_HEIGHT + LOWER_MARGIN - 90)
-	draw_text('Press UP or DOWN to change floor', font, WHITE, 10, SCREEN_HEIGHT + LOWER_MARGIN - 60)
+	draw_text('Press UP or DOWN to change floor. Press ENTER to edit level name.', font, WHITE, 10, SCREEN_HEIGHT + LOWER_MARGIN - 60)
 
 	#save and load data
 	if save_button.draw(screen):
 		#save level data
-		save_file(world_data, "level", floor)
-		save_text_file("level")
+		save_file(world_data, level, floor)
+		save_text_file(level)
 	if load_button.draw(screen):
 		#load in level data
 		#reset scroll back to the start of the level
 		scroll = 0
-		world_data = load_file("level", floor)
+		world_data = load_file(level, floor)
 				
 
 	#draw tile panel and tiles
@@ -179,6 +191,11 @@ while run:
 			world_data[y][x] = -1
 
 	events = pygame.event.get()
+	if text_input_active:
+		text_input.update(events)
+
+	draw_text(f'Level Name: ', font, WHITE, 10, SCREEN_HEIGHT + LOWER_MARGIN - 30)
+	screen.blit(text_input.surface, (150, SCREEN_HEIGHT + LOWER_MARGIN - 30))
 
 	for event in events:
 		if event.type == pygame.QUIT:
@@ -187,16 +204,22 @@ while run:
 		if event.type == pygame.KEYDOWN:
 			if event.key == pygame.K_UP and floor < 4:
 				floor += 1
-				world_data = load_file(f'level{floor}_data.csv')
+				world_data = load_file(level, floor)
 			if event.key == pygame.K_DOWN and floor > 1:
 				floor -= 1
-				world_data = load_file(f'level{floor}_data.csv')
+				world_data = load_file(level, floor)
 			if event.key == pygame.K_LEFT:
 				scroll_left = True
 			if event.key == pygame.K_RIGHT:
 				scroll_right = True
 			if event.key == pygame.K_RSHIFT:
 				scroll_speed = 5
+			if event.key == pygame.K_RETURN:
+				# The ENTER key will toggle the text input for the level name
+				if text_input_active:
+					level = text_input.value
+					text_input.cursor_visible = False
+				text_input_active = not text_input_active
 
 
 		if event.type == pygame.KEYUP:
